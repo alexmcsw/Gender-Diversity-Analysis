@@ -1,0 +1,139 @@
+---
+title: "Gender diversity analysis"
+author: D.Hennessy and J. Barnes
+date: '2022-09-12'
+output: html_document
+
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Load dependencies
+library(dplyr)
+library(ggplot2)
+library(readr)
+
+
+# Import .csv files for plotting
+
+age_groups <- read_csv("age_groups.csv", col_names = TRUE)
+
+
+
+```
+
+## Plotting results of census data on gender diversity
+
+### Background
+
+I am going to recreate a plot of gender diversity by age group released from the Daily on April 27th 2022, linked below. It is interesting to note that Canada is the first country in the world to provide census data on transgender and non-binary people.
+
+<https://www150.statcan.gc.ca/n1/daily-quotidien/220427/dq220427b-eng.htm>
+
+### Data
+
+The figures produced in the Daily are accompanied by .csv files. I downloaded these files for plotting.
+
+### Packages and online tips and tricks
+
+**Thanks to Joel Barnes who reminded me how to ggplot!!!**. ggplot2 was used to create the plots, dplyr was used to manipulate the data in advance of plotting. I also used the following online resources:
+
+<http://www.sthda.com/english/wiki/ggplot2-barplots-quick-start-guide-r-software-and-data-visualization>
+
+<https://epirhandbook.com/en/ggplot-basics.html>
+
+<https://ggplot2.tidyverse.org/>
+
+## Basic bar graph
+
+First I will make a basic bar plot with the data.....this looks pretty good, but I think we can improve it.
+
+```{r, echo=TRUE}
+
+plot1 <-ggplot(
+  data = age_groups,
+  aes(x = `Age group`, y = Percentage)
+) +
+  geom_bar(stat = "identity", aes(fill = Gender))
+
+plot1
+
+```
+
+## Unstack the bars
+
+Let's use position dodge to unstack the bar.
+
+```{r, echo=TRUE}
+plot2 <-ggplot(
+  data = age_groups,
+  aes(x = `Age group`, y = Percentage)
+) +
+  geom_bar(stat = "identity", aes(fill = Gender), position = position_dodge())
+
+plot2
+```
+
+
+## Reformat to make it look nicer
+
+I want to remove the legend title, reduce the axis font size and make it angled for ease of reading, as well as remove the x label, which looks a little redundant.
+
+```{r, echo=TRUE}
+plot3 <-ggplot(
+  data = age_groups,
+  aes(x = `Age group`, y = Percentage)
+) +
+  geom_bar(stat = "identity", aes(fill = Gender), position = position_dodge()) +
+
+  theme(
+    legend.position = "right",
+    legend.title = element_blank(),
+    axis.text = element_text(size = 8),
+    axis.text.x = element_text(angle = 25)
+  ) +
+  
+  xlab("")
+
+plot3
+```
+
+
+## Add a title and a caption
+
+Finally I want to add a title and a caption that notes the source of the data.
+
+```{r}
+plot4 <-ggplot(
+  data = age_groups,
+  aes(x = `Age group`, y = Percentage)
+) +
+  geom_bar(stat = "identity", aes(fill = Gender), position = position_dodge()) +
+
+  theme(
+    legend.position = "right",
+    legend.title = element_blank(),
+    axis.text = element_text(size = 8),
+    axis.text.x = element_text(angle = 25)
+  ) +
+  
+  xlab("") +
+  labs(title = "Gender diversity by age group", 
+       caption = "Source: www150.statcan.gc.ca/n1/daily-quotidien/220427/dq220427b-eng.htm") 
+
+  
+plot4
+```
+
+## Flip and inspect
+
+Let's just flip it and inspect to see what it looks like. Ideally I would like to change the order of the age groups from youngest at the top to oldest at the bottom, but that will have to the wait for another day:)
+
+```{r, echo=TRUE}
+
+plot4 + coord_flip()
+
+```
+
